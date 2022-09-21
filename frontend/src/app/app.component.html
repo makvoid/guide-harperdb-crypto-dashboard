@@ -1,0 +1,10 @@
+<ng-container *ngIf="this.authStore.loading">
+  <app-spinner></app-spinner>
+</ng-container>
+
+<ng-container *ngIf="!this.authStore.loading">
+  <app-header *ngIf="this.authStore.authenticated"></app-header>
+  <div class="container mx-auto px-2 mt-2">
+    <router-outlet></router-outlet>
+  </div>
+</ng-container>

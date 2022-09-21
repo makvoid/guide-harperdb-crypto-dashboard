@@ -1,0 +1,8 @@
+<div class="gap-4 grid grid-cols-4 gap-3 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6">
+  <div *ngFor="let coin of parsedCoins">
+    <app-price-tracker
+      [data]="coin.data!"
+      [coin]="coin"
+    ></app-price-tracker>
+  </div>
+</div>

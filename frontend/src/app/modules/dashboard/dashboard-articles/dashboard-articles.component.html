@@ -1,0 +1,57 @@
+<ng-container *ngIf="!parsedArticles.length || !categories.length">
+  <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+    No Articles and/or Feed Categories configured - set some up in <a class="text-blue-500 hover:underline" routerLink="/settings">Settings</a>.
+  </p>
+</ng-container>
+<div class="rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+    <ng-container *ngIf="parsedArticles.length && categories.length">
+        <!-- Tab buttons -->
+        <div class="border-b border-gray-200 dark:border-gray-700">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+              <li
+                  *ngFor="let category of categories"
+                  [ngClass]="{'tab-non-active': !tabActive(category), 'tab-active': tabActive(category)}"
+                  class="mr-2"
+              >
+                  <button
+                      (click)="setActiveTab(category)"
+                      class="tab-base"
+                      type="button"
+                  >
+                      {{ category }}
+                  </button>
+              </li>
+            </ul>
+          </div>
+          <!-- Tab content -->
+          <div>
+              <div
+                  *ngFor="let category of categories"
+                  [ngClass]="{'hidden': !tabActive(category)}"
+                  class="pane-base"
+              >
+                  <ul
+                    *ngIf="getCategoryArticles(category) as articles"
+                    class="max-h-80 article-list"
+                    [ngClass]="{'overflow-y-scroll': articles.length}"
+                >
+                      <li *ngIf="!articles.length" class="no-articles">
+                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">No Articles available for this category.</p>
+                      </li>
+                      <li *ngFor="let article of articles">
+                          <a title="{{ article.contentSnippet }}" target="_blank" href="{{ article.link }}" class="article-block">
+                              <div class="py-2 border-b-2 border-slate-300">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ article.title }}
+                                    </p>
+                                    <p class="text-muted text-sm">
+                                        Posted {{ article.pubDate | timeago  }} via {{ article.feedName }}
+                                    </p>
+                              </div>
+                          </a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+    </ng-container>
+</div>

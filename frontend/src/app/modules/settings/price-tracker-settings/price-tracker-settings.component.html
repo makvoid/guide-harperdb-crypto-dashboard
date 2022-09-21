@@ -1,0 +1,158 @@
+<!-- Autocomplete templates -->
+<ng-template #itemTemplate let-item>
+  <a [innerHTML]="item"></a>
+</ng-template>
+<ng-template #notFoundTemplate let-notFound>
+  <div [innerHTML]="notFound"></div>
+</ng-template>
+
+<!-- Modal templates -->
+<ng-template #footerTemplate>
+  <button
+    type="button"
+    (click)="submitModal()"
+    class="btn btn-primary"
+  >
+    Add Price Tracker
+  </button>
+  <button
+    type="button"
+    (click)="cancelModal()"
+    class="btn btn-secondary"
+  >
+    Cancel
+  </button>
+</ng-template>
+<ng-template #bodyTemplate>
+  <form [formGroup]="form">
+    <div class="mb-6">
+      <label for="coin" class="form-label">Cryptocurrency</label>
+      <span id="coin">{{ this.form.get('coin')!.value | titlecase }}</span>
+    </div>
+    <div class="mb-6">
+      <input
+        id="trackTotal"
+        type="checkbox"
+        class="form-checkbox"
+        formControlName="trackTotal"
+        (change)="toggleTrackTotal($event)"
+      />
+      <label for="trackTotal" class="form-checkbox-label">Track Portfolio Total</label>
+    </div>
+    <ng-container *ngIf="this.form.get('trackTotal')!.value">
+      <div class="mb-6">
+        <!-- Start Price -->
+        <label
+          for="startPrice"
+          class="form-label-required"
+          [ngClass]="{'form-label': isControlValid('startPrice'), 'form-label-invalid': !isControlValid('startPrice')}"
+        >
+          Start Price
+        </label>
+        <div class="flex">
+          <span class="form-control-addon">$</span>
+          <input
+            id="startPrice"
+            type="number"
+            step="0.01"
+            min="0"
+            formControlName="startPrice"
+            placeholder="12.34"
+            class="form-control-has-addon"
+            [ngClass]="{'form-control': isControlValid('startPrice'), 'form-control-invalid': !isControlValid('startPrice')}"
+            aria-describedby="startPrice-helper-text"
+          >
+        </div>
+        <div *ngIf="!isControlValid('startPrice') && getControlErrors('startPrice').length">
+          <p *ngFor="let err of getControlErrors('startPrice')" class="mt-2 text-bold text-red-900">
+            <ng-container *ngIf="err.type === 'required'">
+              Start Price is a required field if you want to track it as part of your Portfolio.
+            </ng-container>
+            <ng-container *ngIf="err.type === 'min'">
+              Start Price can be at minimum zero (<code>0</code>).
+            </ng-container>
+          </p>
+        </div>
+        <p
+          id="startPrice-helper-text"
+          class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+        >
+          The price in USD you purchased the cryptocurrency at (ex. 12.34)
+        </p>
+      </div>
+      <div>
+        <!-- Total Owned -->
+        <label
+          for="totalOwned"
+          class="form-label-required"
+          [ngClass]="{'form-label': isControlValid('totalOwned'), 'form-label-invalid': !isControlValid('totalOwned')}"
+        >
+          Total Owned
+        </label>
+        <input
+          id="totalOwned"
+          type="number"
+          step="1"
+          min="0.00000001"
+          formControlName="totalOwned"
+          placeholder="500"
+          [ngClass]="{'form-control': isControlValid('totalOwned'), 'form-control-invalid': !isControlValid('totalOwned')}"
+          aria-describedby="totalOwned-helper-text"
+        >
+        <div *ngIf="!isControlValid('totalOwned') && getControlErrors('totalOwned').length">
+          <p *ngFor="let err of getControlErrors('totalOwned')" class="mt-2 text-bold text-red-900">
+            <ng-container *ngIf="err.type === 'required'">
+              Total Owned is a required field if you want to track it as part of your Portfolio.
+            </ng-container>
+            <ng-container *ngIf="err.type === 'min'">
+              Total Owned can be at minimum 0.00000001.
+            </ng-container>
+          </p>
+        </div>
+        <p
+          id="totalOwned-helper-text"
+          class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+        >
+          The total amount of the cryptocurrency you own (ex. 500)
+        </p>
+      </div>
+    </ng-container>
+  </form>
+</ng-template>
+
+<app-modal
+  #modal
+  [title]="'Price Tracker Addition'"
+  [bodyTemplate]="bodyTemplate"
+  [footerTemplate]="footerTemplate"
+  [showCloseBtn]="true"
+></app-modal>
+
+<form (submit)="false">
+  <div class="mb-3">
+    <label for="track-coin" class="block mb-2 font-medium text-gray-900 dark:text-gray-300">Tracked Coins</label>
+    <!-- Show active coins -->
+    <div *ngIf="trackedCoins.length" class="mb-3">
+      <span *ngFor="let coin of trackedCoins" class="py-2 px-3 mx-1 text-base font-medium text-center text-white bg-blue-500 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:focus:ring-blue-800">
+        {{ coin.coin | titlecase }}
+        <button (click)="removeCoin(coin)" title="Remove Coin" type="button" class="px-2 text-xl">&times;</button>
+      </span>
+    </div>
+    <p *ngIf="!trackedCoins.length" class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+      No Price Trackers are currently configured.
+    </p>
+    <div class="w-1/4">
+      <ng-autocomplete
+        #selector
+        [data]="getAvailableCoins()"
+        searchKeyword="name"
+        placeholder="Select Cryptocurrency"
+        (selected)='selectEvent($event)'
+        [itemTemplate]="itemTemplate"
+        [notFoundTemplate]="notFoundTemplate">
+      </ng-autocomplete>
+    </div>
+  </div>
+</form>
+
+

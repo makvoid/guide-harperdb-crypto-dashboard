@@ -1,0 +1,29 @@
+<ng-container *ngIf="this.settingsStore.loading">
+  <app-spinner></app-spinner>
+</ng-container>
+
+<ng-container *ngIf="!this.settingsStore.loading">
+  <app-breadcrumb pageTitle="Settings"></app-breadcrumb>
+
+  <h2 class="text-2xl font-bold mt-2">Price Tracker</h2>
+  <p class="mb-2">
+    Configure which Coins are being tracked and the total held within your Portfolio if desired.
+  </p>
+  <app-price-tracker-settings
+    [trackedCoins]="this.settingsStore.settings.trackedCoins"
+    [coinList]="this.settingsStore.settings.coinList"
+    [updateState]="updateState"
+  ></app-price-tracker-settings>
+
+  <hr class="mt-4">
+
+  <h2 class="text-2xl font-bold mt-2">Feed Handler</h2>
+  <p class="mb-2">
+    Add, edit or remove feed handlers as well as add or remove categories for the feed handlers.
+  </p>
+  <app-feed-handler-settings
+    [activeCategories]="this.settingsStore.settings.categories"
+    [configuredFeeds]="this.settingsStore.settings.feeds"
+    [updateState]="updateState"
+  ></app-feed-handler-settings>
+</ng-container>

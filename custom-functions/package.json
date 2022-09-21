@@ -1,0 +1,34 @@
+{
+  "name": "custom-functions",
+  "version": "1.0.0",
+  "description": "HarperDB Custom Functions for the Crypto Dashboard system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makvoid/guide-harperdb-crypto-dashboard.git"
+  },
+  "author": "Michael King <@makvoid>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/makvoid/guide-harperdb-crypto-dashboard/issues"
+  },
+  "homepage": "https://github.com/makvoid/guide-harperdb-crypto-dashboard#readme",
+  "devDependencies": {
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0"
+  },
+  "dependencies": {
+    "async": "^3.2.4",
+    "cron": "^2.1.0",
+    "node-fetch": "2.6.7",
+    "proper-lockfile": "^4.1.2",
+    "random-useragent": "^0.5.0",
+    "rss-parser": "^3.12.0"
+  }
+}

@@ -1,0 +1,18 @@
+<ng-container *ngIf="this.dashboardStore.loading">
+  <app-spinner></app-spinner>
+</ng-container>
+
+<ng-container *ngIf="!this.dashboardStore.loading">
+  <app-breadcrumb></app-breadcrumb>
+  <div class="mt-3">
+    <app-dashboard-trackers
+      [trackedCoins]="this.dashboardStore.info.trackedCoins"
+    ></app-dashboard-trackers>
+  </div>
+  <div class="mt-3">
+    <app-dashboard-articles
+      [feeds]="this.dashboardStore.info.feeds"
+      [categories]="this.dashboardStore.info.categories"
+    ></app-dashboard-articles>
+  </div>
+</ng-container>

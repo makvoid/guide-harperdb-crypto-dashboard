@@ -1,0 +1,196 @@
+<!-- Autocomplete templates -->
+<ng-template #itemTemplate let-item>
+  <a [innerHTML]="item"></a>
+</ng-template>
+<ng-template #notFoundTemplate let-notFound>
+  <div [innerHTML]="notFound"></div>
+</ng-template>
+
+<!-- Modal templates -->
+<ng-template #footerTemplate>
+  <button
+    type="button"
+    (click)="submitFeedHandlerModal()"
+    class="btn btn-primary"
+  >
+    {{ modalMode === 'edit' ? 'Save Feed Handler' : 'Add Feed Handler' }}
+  </button>
+  <button
+    type="button"
+    (click)="this.modal.hide()"
+    class="btn btn-secondary"
+  >
+    Cancel
+  </button>
+</ng-template>
+<ng-template #bodyTemplate>
+  <form [formGroup]="form" (ngSubmit)="submitFeedHandlerModal()">
+    <!-- Name -->
+    <div class="mb-6">
+      <label
+        for="name"
+        class="form-label-required"
+        [ngClass]="{'form-label': isControlValid('name'), 'form-label-invalid': !isControlValid('name')}"
+      >Feed Handler Name</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        autocomplete="off"
+        placeholder="Publication Name"
+        [ngClass]="{'form-control': isControlValid('name'), 'form-control-invalid': !isControlValid('name')}"
+      >
+      <div *ngIf="!isControlValid('name') && getControlErrors('name').length">
+        <p *ngFor="let err of getControlErrors('name')" class="mt-2 text-bold text-red-900">
+          <ng-container *ngIf="err.type === 'minlength'">
+            Feed Handler Name must be at least {{ err.error.requiredLength }} characters.
+          </ng-container>
+          <ng-container *ngIf="err.type === 'required'">
+            Feed Handler Name is a required field.
+          </ng-container>
+        </p>
+      </div>
+    </div>
+    <!-- URL -->
+    <div class="mb-6">
+      <label
+        for="url"
+        class="form-label-required"
+        [ngClass]="{'form-label': isControlValid('url'), 'form-label-invalid': !isControlValid('url')}"
+      >Feed Handler URL</label>
+      <input
+        id="url"
+        type="text"
+        formControlName="url"
+        autocomplete="off"
+        placeholder="https://feed.example.com"
+        [ngClass]="{'form-control': isControlValid('url'), 'form-control-invalid': !isControlValid('url')}"
+      >
+      <div *ngIf="!isControlValid('url') && getControlErrors('url').length">
+        <p *ngFor="let err of getControlErrors('url')" class="mt-2 text-bold text-red-900">
+          <ng-container *ngIf="err.type === 'minlength'">
+            Feed Handler URL must be at least {{ err.error.requiredLength }} characters.
+          </ng-container>
+          <ng-container *ngIf="err.type === 'required'">
+            Feed Handler URL is a required field.
+          </ng-container>
+        </p>
+      </div>
+    </div>
+    <!-- Set categories -->
+    <div class="mb-6">
+      <label
+        for="categories"
+        class="form-label form-label-required"
+      >
+        Feed Handler Categories
+      </label>
+      <ng-autocomplete
+        id="categories"
+        #categorySelect
+        [data]="getCategories()"
+        searchKeyword="name"
+        placeholder="Select Categories"
+        (selected)='feedHandlerCategorySelect($event)'
+        [itemTemplate]="itemTemplate"
+        [notFoundTemplate]="notFoundTemplate"
+        [ngClass]="{'invalid': !isControlValid('categories')}"
+        (inputFocused)="markFieldAsDirty('categories')"
+      >
+      </ng-autocomplete>
+      <div *ngIf="!isControlValid('categories') && getControlErrors('categories').length">
+        <p *ngFor="let err of getControlErrors('categories')" class="mt-2 text-bold text-red-900">
+          <ng-container *ngIf="err.type === 'required'">
+            You must select at minimum one category for a Feed Handler.
+          </ng-container>
+        </p>
+      </div>
+      <!-- Show categories -->
+      <div *ngIf="getFeedHandlerCategories()" class="mt-3">
+        <span *ngFor="let category of getFeedHandlerCategories()" class="py-2 px-3 mx-1 pill-wrapper">
+          {{ category }}
+          <button
+            type="button"
+            title="Remove Category"
+            (click)="removeFeedHandlerCategory(category)"
+            class="px-2 text-xl"
+          >
+            &times;
+          </button>
+        </span>
+      </div>
+    </div>
+    <!-- Settings Editor -->
+    <div>
+      <label
+        for="editor"
+        [ngClass]="{'form-label': isControlValid('settings'), 'form-label-invalid': !isControlValid('settings')}"
+      >
+        Feed Parser Settings
+      </label>
+      <ngx-monaco-editor
+        id="editor"
+        name="code"
+        [options]="{ theme: 'vs-dark', language: 'json' }"
+        formControlName="settings"
+        aria-describedby="helper-text-explanation"
+      ></ngx-monaco-editor>
+      <p
+        id="helper-text-explanation"
+        class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+      >
+        Enter a JSON object to pass to the <a href="https://github.com/rbren/rss-parser#xml-options" target="_blank"><code class="text-red-700">rss-parser</code></a> settings.
+      </p>
+    </div>
+  </form>
+</ng-template>
+
+<!-- Edit/Add Feed Handler -->
+<app-modal
+  #modal
+  [title]="modalMode === 'edit' ? 'Edit Feed Handler' : 'Add Feed Handler'"
+  [bodyTemplate]="bodyTemplate"
+  [footerTemplate]="footerTemplate"
+  [showCloseBtn]="true"
+  (onClose)="this.modal.hide()"
+></app-modal>
+
+<!-- Component contents -->
+<label for="handlers" class="form-label">Configured Feeds</label>
+<div id="handlers">
+  <ul class="list-disc list-inside pl-5">
+    <li *ngFor="let feed of configuredFeeds">
+      {{ feed.name }}
+      <span class="pl-2">
+        <span
+          title="Edit Feed"
+          (click)="editFeed(feed)"
+          class="text-blue-500 hover:text-blue-700 hover:underline cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </span>
+        <span
+          title="Delete Feed"
+          (click)="deleteFeed(feed)"
+          class="text-blue-500 hover:text-blue-700 hover:underline cursor-pointer pl-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </span>
+      </span>
+    </li>
+  </ul>
+  <p *ngIf="!configuredFeeds.length" class="text-sm text-gray-500 dark:text-gray-400">
+    No Feeds are currently configured.
+  </p>
+  <button
+    type="button"
+    (click)="addFeedHandler()"
+    class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+  >
+    Add Feed
+  </button>
+</div>

@@ -1,0 +1,32 @@
+.tab-non-active {
+  @apply border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 font-normal;
+}
+.tab-active {
+  @apply font-bold bg-slate-50 border-slate-200;
+}
+.tab-base {
+  @apply inline-block p-4 rounded-t-lg border-b-2;
+}
+.pane-base {
+  @apply p-4 rounded-lg dark:bg-gray-800;
+}
+.pane-text {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+/* .article-list li:not(.no-articles) {
+  @apply bg-gray-50;
+} */
+
+.article-list li:nth-child(even):not(.no-articles) {
+  @apply bg-gray-50;
+}
+
+.article-block {
+  display: block;
+  cursor: pointer;
+}
+
+app-dashboard-articles {
+  border: 1px solid red;
+}

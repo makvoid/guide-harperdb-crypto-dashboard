@@ -1,0 +1,53 @@
+<!-- Component contents -->
+<label
+  for="categories"
+  [ngClass]="{'form-label': isControlValid('category'), 'form-label-invalid': !isControlValid('category')}"
+>
+  Feed Categories
+</label>
+<!-- Show categories -->
+<div class="w-1/2 mb-3">
+  <span *ngFor="let category of activeCategories" class="py-2 px-3 mx-1 pill-wrapper">
+    {{ category.name }}
+    <button
+      type="button"
+      title="Remove Category"
+      (click)="removeCategory(category)"
+      class="px-2 text-xl"
+    >
+      &times;
+    </button>
+  </span>
+  <p *ngIf="!activeCategories.length" class="text-sm text-gray-500 dark:text-gray-400">
+    No Feed Categories are currently configured.
+  </p>
+</div>
+<div>
+  <!-- Add new category -->
+  <form [formGroup]="form" (ngSubmit)="addCategory()">
+    <div class="grid grid-cols-2 w-1/2">
+      <div>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Category Name"
+          formControlName="category"
+          [ngClass]="{'form-control': isControlValid('category'), 'form-control-invalid': !isControlValid('category')}"
+        />
+        <div *ngIf="!isControlValid('category') && getControlErrors('category').length">
+          <p *ngFor="let err of getControlErrors('category')" class="mt-2 text-bold text-red-900">
+            <ng-container *ngIf="err.type === 'minlength'">
+              Category Name must be at least {{ err.error.requiredLength }} characters.
+            </ng-container>
+            <ng-container *ngIf="err.type === 'required'">
+              Category Name is a required field.
+            </ng-container>
+          </p>
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary mx-2">Add Category</button>
+      </div>
+    </div>
+  </form>
+</div>
