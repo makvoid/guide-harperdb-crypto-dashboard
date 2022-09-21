@@ -1,7 +1,7 @@
 # Introduction
 This repository holds the code for a Cryptocurrency Dashboard project using HarperDB Custom Functions and Angular as a frontend. I recommend following the article I've written about this project, which you can find linked below as it contains some additional context.
 
-[Article Link](https://www.example.com)
+[Article Link](https://harperdb.io/blog/how-to-build-a-real-time-crypto-dashboard/)
 
 # Requirements
 * NodeJS v12+
